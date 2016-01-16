@@ -11,6 +11,6 @@ manage_if=enp0s8
 manage_if=enp0s8
 manager_ip=192.168.200.1
 
-consul_server=192.168.200.1
+# consul_server=192.168.200.1
 
 

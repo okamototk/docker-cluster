@@ -6,7 +6,7 @@
   roles:
   - docker
 # for consul
-  - consul
+#  - consul
   - swarm-node
 
   tasks:
