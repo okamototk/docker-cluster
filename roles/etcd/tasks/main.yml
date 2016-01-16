@@ -1,31 +1,14 @@
 ---
-- name: Check etcd container
-  command: docker inspect etcd0
-  register: check_etcd0
-  ignore_errors: yes
+- name: Check etcd install
+  stat: path=/usr/local/bin/etcd
+  register: check_etch_install
 
-- name: Pull etcd image
-  command: docker pull quay.io/coreos/etcd:{{etcd_version}}
-  when: check_etcd0.rc != 0
+- include: install.yml
+  when: check_etch_install.stat.exists == False
 
-- name: Create etcd container
-  command: |
-   docker create \
-           -p 4001:4001 -p 2379:2379 -p 2380:2380 \
-           --name etcd0 quay.io/coreos/etcd:{{etcd_version}} \
-           --data-dir /var/lib/etcd \
-           -name etcd0 \
-           -advertise-client-urls http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:2379,http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:4001 \
-           -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 \
-           -initial-advertise-peer-urls http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:2380 \
-           -listen-peer-urls http://0.0.0.0:2380 \
-           -initial-cluster-token etcd-cluster-1 \
-           -initial-cluster etcd0=http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:2380 \
-           -initial-cluster-state new
-  when: check_etcd0.rc != 0
+- file: path=/var/lib/etcd state=directory mode=0755
 
-- name: Copy systemd file
-  copy: src=etcd.service dest={{systemd_path}}/etcd.service
+- template: src=etcd.service.j2 dest={{systemd_path}}/etcd.service
 
 - name: Load copied systemd file
   command: systemctl daemon-reload

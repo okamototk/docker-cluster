@@ -1,0 +1,9 @@
+- get_url: url=https://github.com/coreos/etcd/releases/download/v2.2.4/etcd-v2.2.4-linux-amd64.tar.gz dest=/tmp
+
+- unarchive: src=/tmp/etcd-v2.2.4-linux-amd64.tar.gz dest=/tmp copy=no
+  environment: proxy_env
+
+- command: cp /tmp/etcd-v2.2.4-linux-amd64/etcd /usr/local/bin
+
+- command: cp /tmp/etcd-v2.2.4-linux-amd64/etcdctl /usr/local/bin
+
