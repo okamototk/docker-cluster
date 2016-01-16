@@ -1,0 +1,33 @@
+---
+- name: Check swarm join container
+  command: docker inspect swarm_join
+  register: check_join
+  ignore_errors: yes
+
+- name: Pull swarm image
+  command: docker pull swarm
+  when: check_join.rc != 0
+
+- name: Set http_proxy for swarm
+  set_fact:
+    swarm_env: -e http_proxy={{proxy_env.http_proxy}} -e no_proxy={{proxy_env.no_proxy}}
+  when: http_proxy is defined and  http_proxy != None
+
+- name: Create swarm join container
+  command: docker create {{swarm_env}} --name swarm_join swarm join --addr={{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:2375 {{cluster_store}}
+  when: check_join.rc != 0
+
+- name: Copy systemd service
+  copy: src=docker-swarm-join.service dest={{systemd_path}}/docker-swarm-join.service
+
+- name: Reload systemd file 
+  command: systemctl daemon-reload
+
+- name: Run swarm join container
+  service: name=docker-swarm-join.service state=running enabled=yes
+
+- include: firewalld.yml
+  when: firewalld is defined
+
+- include: ufw.yml
+  when: ufw is defined

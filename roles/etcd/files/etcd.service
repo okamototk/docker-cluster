@@ -1,0 +1,13 @@
+[Unit]
+Description=etcd agent
+After=docker.service
+Requires=docker.service
+
+[Service]
+ExecStart=/usr/bin/docker start -a etcd0
+ExecStop=/usr/bin/docker stop -t 2 etcd0
+ExecReload=/usr/bin/docker restart etcd0
+
+
+[Install]
+WantedBy=local.target

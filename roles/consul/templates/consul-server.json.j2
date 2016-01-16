@@ -1,0 +1,13 @@
+{
+  "datacenter": "{{datacenter}}",
+  "addresses" : {
+    "http": "0.0.0.0"
+  },
+  "bind_addr": "{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}",
+  "node_name": "{{ansible_hostname}}",
+  "domain": "{{ansible_domain}}",
+  "server": true,
+  "bootstrap_expect": 1,
+  "data_dir": "/var/lib/consul"
+}
+

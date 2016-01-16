@@ -1,0 +1,10 @@
+---
+# Allow Swarm Join Port
+- firewalld: port=2375/tcp permanent=true state=enabled
+
+# Allow VXLAN port
+- firewalld: port=4789/udp permanent=true state=enabled
+
+# Allow control plane for overlay network
+- firewalld: port=7946/tcp permanent=true state=enabled
+- firewalld: port=7946/udp permanent=true state=enabled

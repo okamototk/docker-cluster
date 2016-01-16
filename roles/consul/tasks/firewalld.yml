@@ -1,0 +1,4 @@
+---
+- firewalld: port=8301/tcp permanent=true state=enabled
+- firewalld: port=8300/tcp permanent=true state=enabled
+- firewalld: port=8500/tcp permanent=true state=enabled

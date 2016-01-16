@@ -1,0 +1,6 @@
+---
+# Open firewalld port for etcd
+- ufw: rule=allow proto=tcp port=2379
+- ufw: rule=allow proto=tcp port=2380
+- ufw: rule=allow proto=tcp port=4001
+

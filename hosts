@@ -1,0 +1,16 @@
+[manager]
+192.168.200.1
+
+[manager:vars]
+manage_if=enp0s8
+
+[nodes]
+192.168.200.2
+
+[nodes:vars]
+manage_if=enp0s8
+manager_ip=192.168.200.1
+
+consul_server=192.168.200.1
+
+

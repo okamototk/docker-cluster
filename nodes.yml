@@ -1,0 +1,15 @@
+---
+- name: nodes
+  hosts: nodes
+  user: root
+
+  roles:
+  - docker
+# for consul
+  - consul
+  - swarm-node
+
+  tasks:
+  - service: name=firewalld state=restarted
+    when: firewalld is defined
+

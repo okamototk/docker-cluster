@@ -1,0 +1,57 @@
+---
+- name: Install unzip deb
+  apt: name=unzip
+  environment: proxy_env
+  when: ansible_os_family == 'Debian'
+
+- name: Install unzip rpm
+  yum: name=unzip
+  environment: proxy_env
+  when: ansible_os_family == 'RedHat'
+
+- name: Install libselinux-python rpm
+  yum: name=libselinux-python
+  environment: proxy_env
+  when: ansible_os_family == 'RedHat'
+
+- name: Check consul install
+  stat: path=/usr/local/bin/consul
+  register: check_consul_install
+
+- name: Download consul
+  get_url: url=https://releases.hashicorp.com/consul/{{consul_version}}/consul_{{consul_version}}_linux_amd64.zip dest=/tmp validate_certs=False
+  when: check_consul_install.stat.exists == False
+  environment: proxy_env
+
+- name: Unarchive consul
+  command: chdir=/usr/local/bin unzip /tmp/consul_{{consul_version}}_linux_amd64.zip
+  when: check_consul_install.stat.exists == False
+
+- name: mkdir /var/lib/consul
+  file: path=/var/lib/consul state=directory mode=0755
+
+- name: mkdir /etc/consul.d
+  file: path=/etc/consul.d state=directory mode=0755
+
+- name: Create consul client config
+  template: src="consul-client.json.j2" dest="/etc/consul.d/client.json"
+  when: consul_server is defined
+
+- name: Create server client config
+  template: src="consul-server.json.j2" dest="/etc/consul.d/server.json"
+  when: consul_server is not defined
+
+- name: Copy systemd service
+  copy: src=consul.service dest={{systemd_path}}/consul.service
+
+- name: Reload systemd file
+  command: systemctl daemon-reload
+
+- name: Run consul
+  service: name=consul.service state=running enabled=yes
+
+- include: firewalld.yml
+  when: firewalld is defined
+
+- include: ufw.yml
+  when: ufw is defined

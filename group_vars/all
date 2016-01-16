@@ -1,0 +1,19 @@
+# Set Swarm Manager and Consul Server IP
+manager_ip: 192.168.200.1
+
+# Cluster store URL
+# for etcd
+cluster_store: etcd://{{manager_ip}}:2379/swarm
+
+# for consul
+# cluster_store: consul://localhost:8500/swarm
+
+# set your proxy if you need
+http_proxy:
+no_proxy: 127.0.0.1,192.168.250.2,192.168.250.3,192.168.250.1
+
+docker_config:
+  # Use overlayfs for Storage Drive.
+  # If you want to use OS default driver, use aufs(Ubuntu) or
+  # devicemapper(RHEL).
+  storage_driver: overlay

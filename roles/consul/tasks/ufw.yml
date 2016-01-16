@@ -1,0 +1,4 @@
+---
+- ufw: rule=allow proto=tcp port=8301
+- ufw: rule=allow proto=tcp port=8300
+- ufw: rule=allow proto=tcp port=8500

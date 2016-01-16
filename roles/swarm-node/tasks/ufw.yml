@@ -1,0 +1,10 @@
+---
+# Allow Swarm Join Port
+- ufw: rule=allow proto=tcp port=2375
+
+# Allow VXLAN port
+- ufw: rule=allow proto=udp port=4789
+
+# Allow control plane for overlay network
+- ufw: rule=allow proto=tcp port=7946
+- ufw: rule=allow proto=udp port=7946

@@ -1,0 +1,12 @@
+[Unit]
+Description=Run Docker Swarm Join Container
+After=docker.service
+Requires=docker.service
+
+[Service]
+ExecStart=/usr/bin/docker start -a swarm_join
+ExecStop=/usr/bin/docker stop -t 2 swarm_join
+ExecReload=/usr/bin/docker restart swarm_join
+
+[Install]
+WantedBy=local.target

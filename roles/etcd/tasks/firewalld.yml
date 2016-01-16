@@ -1,0 +1,5 @@
+---
+# Open firewalld port for etcd
+- firewalld: port=2379/tcp permanent=true state=enabled
+- firewalld: port=2380/tcp permanent=true state=enabled
+- firewalld: port=4001/tcp permanent=true state=enabled

@@ -1,0 +1,12 @@
+[Unit]
+Description=Run Docker Swarm Manage Container
+After=docker.service
+Requires=docker.service
+
+[Service]
+ExecStart=/usr/bin/docker start -a swarm_manage
+ExecStop=/usr/bin/docker stop -t 2 swarm_manage
+ExecReload=/usr/bin/docker restart swarm_manage
+
+[Install]
+WantedBy=local.target
