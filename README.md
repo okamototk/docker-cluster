@@ -3,6 +3,8 @@ Docker Swarmインストーラ
 
 # 概要
 
+※ 本スクリプトは開発中のため不具合がある可能性があるのでご注意ください。
+
 Docker Swarmにより外部ツールを利用しなくともDockerだけでクラスタ
 や仮想ネットワークを構築できるようになりました。
 Docker Machineを利用すると簡単にSwarmを構築することができますが、
@@ -34,17 +36,19 @@ VMをコピーしてノードを作成する場合、ホスト名に注意して
 # 構成
 
 通常のノードと管理ノードを別々に作成します。
+KVは、etcdとconsulが選択できるようになっていますがデフォルトはetcd
+を利用します。
 
 ## 管理ノード
 
-* Consulがサーバモードで動作します
 * Swarmコンテナが管理モード(manage)で動作します
 * Swarmコンテナがノードモード(join)で動作するため、ノードとしても利用できます。
+* etcd, consul(server mode)を起動します
 
 ## 通常ノード
 
-* Consulがサーバクライアント動作します
 * Swarmコンテナがノードモード(join)で動作します。
+* consul(clint mode)を起動します。
 
 # 使い方
 
@@ -53,11 +57,11 @@ VMをコピーしてノードを作成する場合、ホスト名に注意して
 docker-swarmディレクトリにあるhostsファイルでホスト定義を行います。
 manageで管理ノードの設定を、nodesでホストノードの設定を行います。
 
-  [manage]
-  127.0.0.1  ansible_connection=local
+  [manager]
+  192.168.200.1
 
   
-  [manage:vars]
+  [manager:vars]
   manage_if=eth0
   
   [nodes]
@@ -68,13 +72,13 @@ manageで管理ノードの設定を、nodesでホストノードの設定を行
   
   [nodes:vars]
   manage_if=eth0
-  consul_server=192.168.200.1
+  manager_ip=192.168.200.1
 
 manage_ifはDocker内部で利用する通信のネットワークインタフェースを指定します。
 インストール時に指定したインタフェースのIPアドレスを調査してセットアップを行うため、
 ネットワークインタフェースには事前にIPアドレスが割り当てられている必要があります。
-ホストノード(nodes)の設定では、consul_serverに管理ノードのIPアドレスを指定する
-必要があります。
+ホストノード(nodes)の設定では、管理ノードのIPアドレスをmanager_ipに設定する必要
+があります。
 
 ## 事前準備
 
@@ -107,12 +111,12 @@ Ansibleを実行するホストで、下記のコマンドを実行しSSH鍵を�
 
 準備ができたら下記のコマンドを実行します
 
-  # ansible-playbook -i hosts site.yml
+  # ansible-playbook site.yml -i hosts
 
 
 # Tips
 
-## プロキシの設定(工事中)
+## プロキシの設定
 
 インターネット接続にプロキシが必要な環境でSwarmクラスタを構築する場合は、
 group_vars/allの下記の設定でプロキシの設定を行います。
