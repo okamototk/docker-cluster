@@ -1,0 +1,23 @@
+---
+- name: k8smaster
+  hosts: manager
+  user: root
+  vars:
+  - master: 192.168.200.1
+  - systemd_path: /lib/systemd/system
+  roles:
+  - config
+  - k8s-etcd
+  - flannel
+  - k8s-master
+  - k8s-worker
+
+- name: k8sworkers
+  hosts: nodes
+  vars:
+  - master: 192.168.200.1
+  - systemd_path: /lib/systemd/system
+  roles:
+  - config
+  - flannel
+  - k8s-worker

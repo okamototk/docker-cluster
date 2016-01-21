@@ -1,0 +1,36 @@
+- command: docker start k8s_flannel
+
+- command: |
+    docker run
+      --name=k8s_kubelet
+      --volume=/:/rootfs:ro
+      --volume=/sys:/sys:ro
+      --volume=/dev:/dev
+      --volume=/var/lib/docker/:/var/lib/docker:rw
+      --volume=/var/lib/kubelet/:/var/lib/kubelet:rw
+      --volume=/var/run:/var/run:rw
+      --net=host
+      --privileged=true
+      --pid=host
+      -d
+      gcr.io/google_containers/hyperkube:{{k8s_ver}}
+      /hyperkube
+        kubelet
+        --api-servers=http://{{master}}:8080
+        --v=2
+        --address=0.0.0.0
+        --enable-server
+        --hostname-override={{ansible_hostname}}
+        --config=/etc/kubernetes/manifests-multi
+
+- command: |
+    docker run
+      --name=k8s_proxy
+      -d
+      --net=host
+      --privileged
+      gcr.io/google_containers/hyperkube:{{k8s_ver}}
+      /hyperkube
+        proxy
+        --master=http://{{master}}:8080
+        --v=2

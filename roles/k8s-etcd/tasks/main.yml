@@ -1,0 +1,19 @@
+- file: path=/var/lib/etcd state=directory mode=0755
+
+- command: >
+    docker run
+             --name k8s_etcd --net=host -d
+             --volume=/var/lib/etcd:/var/lib/etcd:rw
+             gcr.io/google_containers/etcd:{{etcd_ver}}
+             /usr/local/bin/etcd
+               --addr=127.0.0.1:4001
+               --bind-addr=0.0.0.0:4001 --data-dir=/var/lib/etcd
+
+- command: >
+    docker exec k8s_etcd etcdctl
+      set /coreos.com/network/config '{ "Network"{{':'}} "10.1.0.0/16" }'
+  register: res
+  until: res.rc == 0
+  retries: 3
+  delay: 5
+  ignore_errors: yes

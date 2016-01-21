@@ -1,0 +1,35 @@
+- command: >
+    docker run
+      --name k8s_flannel
+      -d
+      --net=host
+      --privileged
+      -v /dev/net:/dev/net
+      quay.io/coreos/flannel:{{flannel_ver}}
+        /opt/bin/flanneld  --etcd-endpoints=http://{{master}}:4001
+
+- shell: >
+    docker exec k8s_flannel
+    cat /run/flannel/subnet.env |
+    awk -F= '/FLANNEL_SUBNET/ {print $2}'
+  register: flannel_subnet
+
+- shell: >
+    docker exec k8s_flannel
+    cat /run/flannel/subnet.env |
+    awk -F= '/FLANNEL_MTU/ {print $2}'
+  register: flannel_mtu
+
+- lineinfile: |
+    dest="{{systemd_path}}/docker.service"
+    regexp="^ExecStart="
+    line="ExecStart=/usr/bin/docker daemon --bip='{{flannel_subnet.stdout}}' --mtu='{{flannel_mtu.stdout}}' -s {{docker_config.storage_driver}} -H fd://"
+
+- command: ifconfig docker0 down
+  ignore_errors: yes
+
+- command: brctl delbr docker0
+  ignore_errors: yes
+
+- command: systemctl daemon-reload
+- service: name=docker state=restarted enabled=yes
