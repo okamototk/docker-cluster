@@ -1,21 +1,21 @@
 - command: >
     docker run
-      --name k8s_flannel
+      --name k8s_flanneld
       -d
       --net=host
       --privileged
       -v /dev/net:/dev/net
       quay.io/coreos/flannel:{{flannel_ver}}
-        /opt/bin/flanneld  --etcd-endpoints=http://{{master}}:4001
+        /opt/bin/flanneld --iface {{interface}} --etcd-endpoints=http://{{master}}:4001
 
 - shell: >
-    docker exec k8s_flannel
+    docker exec k8s_flanneld
     cat /run/flannel/subnet.env |
     awk -F= '/FLANNEL_SUBNET/ {print $2}'
   register: flannel_subnet
 
 - shell: >
-    docker exec k8s_flannel
+    docker exec k8s_flanneld
     cat /run/flannel/subnet.env |
     awk -F= '/FLANNEL_MTU/ {print $2}'
   register: flannel_mtu
