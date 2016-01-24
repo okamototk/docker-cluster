@@ -1,5 +1,3 @@
-- command: docker start k8s_flanneld
-#- command: bash -c "/usr/local/bin/flanneld --iface {{interface}} --etcd-endpoints=http://{{master}}:4001 &"
 - command: |
     docker run
       --name=k8s_kubelet

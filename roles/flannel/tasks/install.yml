@@ -1,0 +1,14 @@
+- command: /usr/local/bin/flanneld --version
+  register: chk_flanneld
+  ignore_errors: yes
+
+- block:
+  - get_url: url=https://github.com/coreos/flannel/releases/download/v{{flannel_ver}}/flannel-{{flannel_ver}}-linux-amd64.tar.gz dest=/tmp
+    environment: "{{proxy_env}}"
+
+  - unarchive: src=/tmp/flannel-{{flannel_ver}}-linux-amd64.tar.gz dest=/tmp
+#  - unarchive: src=https://github.com/coreos/flannel/releases/download/v{{flannel_ver}}/flannel-{{flannel_ver}}-linux-amd64.tar.gz dest=/tmp copy=no
+#    environment: proxy_env
+  - command: cp /tmp/flannel-{{flannel_ver}}/flanneld /usr/local/bin
+
+  when: (chk_flanneld.rc != 0) or (chk_flanneld.stderr != "{{flannel_ver}}")

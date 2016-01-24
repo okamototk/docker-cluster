@@ -9,17 +9,13 @@
     # UDP encapsulate:  {"Type": "udp", "Port": 7890}
     # VXLAN:            {"Type": "vxlan", "VNI": 1, Port: 4789 }
     # Host Gateway:     {"Type": "host-gw" }
-#  - backend: '{"Type": "vxlan", "VNI": 1, "UDPCSum": true}'
   - backend: '{"Type": "vxlan", "VNI": 1}'
-##  - backend: '{"Type": "host-gw"}'
-#  - backend: '{"Type": "host-gw"}'
   - interface: enp0s8
   - systemd_path: /lib/systemd/system
   roles:
   - config
-  - k8s-etcd
+  - etcd
   - flannel
-  - k8s-master
   - k8s-worker
 
 - name: k8sworkers

@@ -1,0 +1,3 @@
+- name: docker-restarted
+  command: docker start k8s_etcd
+  

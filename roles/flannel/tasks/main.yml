@@ -1,29 +1,39 @@
+---
 - command: >
-    docker run
-      --name k8s_flanneld
-      -d
-      --net=host
-      --privileged
-      -v /dev/net:/dev/net
-      quay.io/coreos/flannel:{{flannel_ver}}
-        /opt/bin/flanneld --iface {{interface}} --etcd-endpoints=http://{{master}}:4001
+    curl -L http://192.168.200.1:4001/v2/keys/coreos.com/network/config -XPUT -d
+            value='{ "Network": "{{network}}", "Backend": {{backend}} }'
+  register: res
+  until: res.rc == 0
+  retries: 3
+  delay: 5
+  ignore_errors: yes
 
-- shell: >
-    docker exec k8s_flanneld
-    cat /run/flannel/subnet.env |
-    awk -F= '/FLANNEL_SUBNET/ {print $2}'
-  register: flannel_subnet
+- include: install.yml
+- include: service.yml
+ 
 
-- shell: >
-    docker exec k8s_flanneld
-    cat /run/flannel/subnet.env |
-    awk -F= '/FLANNEL_MTU/ {print $2}'
-  register: flannel_mtu
+#- shell: >
+#    cat /run/flannel/subnet.env |
+#    awk -F= '/FLANNEL_SUBNET/ {print $2}'
+#  register: flannel_subnet
+
+#- shell: >
+#    cat /run/flannel/subnet.env |
+#    awk -F= '/FLANNEL_MTU/ {print $2}'
+#  register: flannel_mtu
+
+#- lineinfile:
+#    dest="{{systemd_path}}/docker.service"
+#    regexp="^ExecStart="
+#    line="ExecStart=/usr/bin/docker daemon --bip='{{flannel_subnet.stdout}}' --mtu='{{flannel_mtu.stdout}}' -s {{docker_config.storage_driver}} -H fd://"
+#    state=present
 
 - lineinfile: |
     dest="{{systemd_path}}/docker.service"
-    regexp="^ExecStart="
-    line="ExecStart=/usr/bin/docker daemon --bip='{{flannel_subnet.stdout}}' --mtu='{{flannel_mtu.stdout}}' -s {{docker_config.storage_driver}} -H fd://"
+    insertafter="\[Service\]"    
+    regexp="\EnvironmentFile=/run/flannel/subnet.env"
+    line="EnvironmentFile=/run/flannel/subnet.env"
+    state=present
 
 - command: ifconfig docker0 down
   ignore_errors: yes
@@ -33,3 +43,4 @@
 
 - command: systemctl daemon-reload
 - service: name=docker state=restarted enabled=yes
+  notify: docker-restarted

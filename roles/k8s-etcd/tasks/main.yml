@@ -11,7 +11,7 @@
 
 - command: >
     curl -L http://192.168.200.1:4001/v2/keys/coreos.com/network/config -XPUT -d
-            value='{ "Network": "{{network}}", "Backend": {{backend}} }'
+            value='{ "Network": "{{network}}", "SubnetLen": 28, "Backend": {{backend}} }'
   register: res
   until: res.rc == 0
   retries: 3

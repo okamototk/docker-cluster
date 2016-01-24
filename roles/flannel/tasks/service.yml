@@ -1,0 +1,13 @@
+- template: src=flannel.service.j2 dest={{systemd_path}}/flannel.service
+
+- name: Load copied systemd file
+  command: systemctl daemon-reload
+
+- name: Start flannel as systemd service
+  service: name=flannel.service state=running enabled=yes
+
+#- include: firewalld.yml
+#  when: firewalld is defined
+
+#- include: ufw.yml
+#  when: ufw is defined

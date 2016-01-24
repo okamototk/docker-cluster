@@ -5,15 +5,16 @@ After=network-online.target
 
 [Service]
 Type=notify
-ExecStart=/usr/local/bin/etcd \
-  -data-dir /var/lib/etcd \
-  -initial-advertise-peer-urls http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:2380 \
-  -advertise-client-urls http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:2379,http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:4001 \
-  -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 \
-  -listen-peer-urls http://0.0.0.0:2380 \
-  -initial-cluster-token 'etcd-cluster' \
-  -initial-cluster etcd0=http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:2380 \
-  -initial-cluster-state new
+ExecStart=/usr/local/bin/etcd --addr=127.0.0.1:4001 --bind-addr=0.0.0.0:4001 --data-dir=/var/lib/etcd
+#ExecStart=/usr/local/bin/etcd \
+#  -data-dir /var/lib/etcd \
+#  -initial-advertise-peer-urls http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:2380 \
+#  -advertise-client-urls http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:2379,http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:4001 \
+#  -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 \
+#  -listen-peer-urls http://0.0.0.0:2380 \
+#  -initial-cluster-token 'etcd-cluster' \
+#  -initial-cluster etcd0=http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:2380 \
+#  -initial-cluster-state new
 ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=SIGINT
 
