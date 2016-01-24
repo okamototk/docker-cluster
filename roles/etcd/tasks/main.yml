@@ -1,20 +1,20 @@
 ---
-- name: Check etcd install
-  stat: path=/usr/local/bin/etcd
-  register: check_etch_install
+- command: /usr/local/bin/etcd --version
+  register: chk_etcd
+  ignore_errors: yes
 
 - include: install.yml
-  when: check_etch_install.stat.exists == False
+  when: (chk_etcd.rc != 0) or (chk_etcd.stdout.find("etcd Version{{':'}} {{etcd_ver}}"))
 
 - file: path=/var/lib/etcd state=directory mode=0755
 
-- template: src=etcd.service.j2 dest={{systemd_path}}/etcd.service
+- template: src=etcd.service.{{cluster}}.j2 dest={{systemd_path}}/etcd.service
 
 - name: Load copied systemd file
   command: systemctl daemon-reload
 
 - name: Start etcd container as systemd service
-  service: name=etcd.service state=running enabled=yes
+  service: name=etcd.service state=restarted enabled=yes
 
 - include: firewalld.yml
   when: firewalld is defined

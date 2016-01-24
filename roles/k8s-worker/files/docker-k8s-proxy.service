@@ -1,0 +1,12 @@
+[Unit]
+Description=Run Kubernates Proxy
+After=docker.service
+Requires=docker.service
+
+[Service]
+ExecStart=/usr/bin/docker start -a k8s_proxy
+ExecStop=/usr/bin/docker stop -t 2 k8s_proxy
+ExecReload=/usr/bin/docker restart k8s_proxy
+
+[Install]
+WantedBy=local.target

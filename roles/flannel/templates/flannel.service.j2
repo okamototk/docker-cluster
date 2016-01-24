@@ -1,0 +1,13 @@
+[Unit]
+Description=flannel daemon
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+Type=notify
+ExecStart=/usr/local/bin/flanneld --iface {{interface}} --etcd-endpoints=http://{{master}}:4001
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGINT
+
+[Install]
+WantedBy=local.target

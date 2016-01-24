@@ -1,0 +1,31 @@
+---
+- name: manager
+  hosts: manager
+  user: root
+
+  roles:
+# for consul
+#  - consul
+  - { role: etcd, cluster: "swarm" }
+  - { role: docker, swarm: true }
+  - swarm-manager
+  - swarm-node
+
+  tasks:
+  - service: name=firewalld state=restarted
+    when: firewalld is defined
+
+- name: nodes
+  hosts: nodes
+  user: root
+
+  roles:
+  - docker
+# for consul
+#  - consul
+  - swarm-node
+
+  tasks:
+  - service: name=firewalld state=restarted
+    when: firewalld is defined
+

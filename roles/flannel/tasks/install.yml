@@ -1,0 +1,6 @@
+- get_url: url=https://github.com/coreos/flannel/releases/download/v{{flannel_ver}}/flannel-{{flannel_ver}}-linux-amd64.tar.gz dest=/tmp
+  environment: "{{proxy_env}}"
+- command: tar zxf /tmp/flannel-{{flannel_ver}}-linux-amd64.tar.gz 
+  args:
+    chdir: "/tmp"
+- command: cp /tmp/flannel-{{flannel_ver}}/flanneld /usr/local/bin

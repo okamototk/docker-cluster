@@ -1,0 +1,59 @@
+- name: Check kubenates kubelet container
+  command: docker inspect k8s_kubelet
+  register: chk_kubelet
+  ignore_errors: yes
+
+- name: Check kubenates kubelet container
+  command: docker inspect k8s_proxy
+  register: chk_proxy
+  ignore_errors: yes
+
+- name: Pull hyperkube image
+  command: docker pull gcr.io/google_containers/hyperkube:{{k8s_ver}}
+  when: chk_kubelet.rc !=0
+
+- command: |
+    docker create
+      --name=k8s_kubelet
+      --volume=/:/rootfs:ro
+      --volume=/sys:/sys:ro
+      --volume=/dev:/dev
+      --volume=/var/lib/docker/:/var/lib/docker:rw
+      --volume=/var/lib/kubelet/:/var/lib/kubelet:rw
+      --volume=/var/run:/var/run:rw
+      --net=host
+      --privileged=true
+      --pid=host
+      gcr.io/google_containers/hyperkube:{{k8s_ver}}
+      /hyperkube
+        kubelet
+        --api-servers=http://{{master}}:8080
+        --v=2
+        --address=0.0.0.0
+        --enable-server
+        --hostname-override={{ansible_hostname}}
+        --config=/etc/kubernetes/manifests-multi
+  when: chk_kubelet.rc !=0
+
+- command: |
+    docker create
+      --name=k8s_proxy
+      --net=host
+      --privileged
+      gcr.io/google_containers/hyperkube:{{k8s_ver}}
+      /hyperkube
+        proxy
+        --master=http://{{master}}:8080
+        --v=2
+  when: chk_proxy.rc !=0
+
+- name: Copy systemd service
+  copy: src=docker-k8s-kubelet.service dest={{systemd_path}}/docker-k8s-kubelet.service
+- copy: src=docker-k8s-proxy.service dest={{systemd_path}}/docker-k8s-proxy.service
+
+- name: Reload systemd file
+  command: systemctl daemon-reload
+
+- name: Run swarm manage container
+  service: name=docker-k8s-kubelet state=running enabled=yes
+- service: name=docker-k8s-proxy state=running enabled=yes

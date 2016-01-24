@@ -1,0 +1,33 @@
+---
+- name: k8smaster
+  hosts: manager
+  user: root
+
+  vars:
+  - master: 192.168.200.1
+  - network: 10.1.0.0/16
+    # Backend type
+    # UDP encapsulate:  {"Type": "udp", "Port": 7890}
+    # VXLAN:            {"Type": "vxlan", "VNI": 1, Port: 4789 }
+    # Host Gateway:     {"Type": "host-gw" }
+  - backend: '{"Type": "vxlan", "VNI": 1}'
+  - interface: enp0s8
+
+  roles:
+  - config
+  - docker
+  - { role: etcd, cluster: "k8s" }
+  - flannel
+  - k8s-worker
+
+- name: k8sworkers
+  hosts: nodes
+  vars:
+  - master: 192.168.200.1
+  - interface: enp0s8
+
+  roles:
+  - config
+  - docker
+  - flannel
+  - k8s-worker
