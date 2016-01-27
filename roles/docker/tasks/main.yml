@@ -8,21 +8,11 @@
   when: check_docker_install.stat.exists == False
   environment: proxy_env
 
-# Modify docker.service systemd file
-- name: Docker cluster configuration
-  lineinfile: |
-    dest="{{systemd_path}}/docker.service"
-    regexp="^ExecStart="
-    line="ExecStart=/usr/bin/docker daemon -s {{docker_config.storage_driver}} --cluster-store={{cluster_store}} --cluster-advertise={{manage_if}}:2376 -H tcp://0.0.0.0:2375 -H fd://"
-  when: (swarm is defined) and ( swarm == true )
+- name: Create systemd service
+  template: src="docker.service.j2" dest="{{systemd_path}}/docker.service"
 
-- name: Config proxy for docker registry
-  lineinfile: |
-    dest="{{systemd_path}}/docker.service"
-    insertafter="\[Service\]"
-    regexp="^Environment=\"HTTP_PROXY="
-    line="Environment=\"HTTP_PROXY={{proxy_env.http_proxy}}\" \"NO_PROXY={{proxy_env.no_proxy}}\""
-  when: http_proxy is defined and http_proxy != None
+- name: Create default environment for docker service
+  template: src="docker.j2" dest="/etc/default/docker"
 
 - name: Reload systemd file
   command: systemctl daemon-reload

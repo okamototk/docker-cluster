@@ -1,0 +1,13 @@
+{% if (swarm | default(False)) %}
+DOCKER_OPTS=-s {{docker_config.storage_driver}} --cluster-store={{cluster_store}} --cluster-advertise={{manage_if}}:2376 -H tcp://0.0.0.0:2375 -H fd://
+{% else %}
+DOCKER_OPTS=-s {{docker_config.storage_driver}}
+{% endif %}
+
+{% if (proxy_env.http_proxy | default(False)) %}
+export HTTP_PROXY={{proxy_env.http_proxy}}
+export NO_PROXY={{proxy_env.no_proxy}}
+{% endif %}
+
+# This is also a handy place to tweak where Docker's temporary files go.
+#export TMPDIR="/mnt/bigdrive/docker-tmp"
