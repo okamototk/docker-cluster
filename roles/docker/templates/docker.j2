@@ -5,8 +5,8 @@ DOCKER_OPTS=-s {{docker_config.storage_driver}}
 {% endif %}
 
 {% if (proxy_env.http_proxy | default(False)) %}
-export HTTP_PROXY={{proxy_env.http_proxy}}
-export NO_PROXY={{proxy_env.no_proxy}}
+HTTP_PROXY={{proxy_env.http_proxy}}
+NO_PROXY={{proxy_env.no_proxy}}
 {% endif %}
 
 # This is also a handy place to tweak where Docker's temporary files go.

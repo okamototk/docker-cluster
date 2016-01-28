@@ -1,7 +1,7 @@
 ---
-- name: Config flannel netowrk
+- name: Config flannel network
   command: >
-    curl -L http://192.168.200.1:4001/v2/keys/coreos.com/network/config -XPUT -d
+    curl -L http://{{master}}:4001/v2/keys/coreos.com/network/config -XPUT -d
             value='{ "Network": "{{network}}", "Backend": {{backend}} }'
   register: res
   until: res.rc == 0
@@ -51,4 +51,3 @@
 
 - command: systemctl daemon-reload
 - service: name=docker state=restarted enabled=yes
-  notify: docker-restarted
