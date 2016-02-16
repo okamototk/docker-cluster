@@ -6,7 +6,7 @@
 - name: Install docker
   shell: curl -L -k https://get.docker.com/ | sh
   when: check_docker_install.stat.exists == False
-  environment: proxy_env
+  environment: '{{proxy_env}}'
 
 - name: Create systemd service
   template: src="docker.service.j2" dest="{{systemd_path}}/docker.service"
