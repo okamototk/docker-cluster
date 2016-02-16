@@ -6,6 +6,7 @@ After=network-online.target
 [Service]
 Type=notify
 ExecStart=/usr/local/bin/etcd \
+  -name etcd0 \
   -data-dir /var/lib/etcd \
   -initial-advertise-peer-urls http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:2380 \
   -advertise-client-urls http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:2379,http://{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:4001 \
