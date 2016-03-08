@@ -4,12 +4,8 @@
   user: root
 
   roles:
-# for consul
-#  - consul
-  - { role: etcd, cluster: "native" }
+  - { role: etcd, cluster: 'native' }
   - { role: docker, native_cluster: True }
-  - swarm-manager
-  - swarm-node
 
   tasks:
   - service: name=firewalld state=restarted
@@ -20,10 +16,7 @@
   user: root
 
   roles:
-  - { role: docker, native_cluster: True, swarm: True }
-# for consul
-#  - consul
-  - swarm-node
+  - { role: docker, native_cluster: True}
 
   tasks:
   - service: name=firewalld state=restarted

@@ -3,10 +3,10 @@ manager_ip: 192.168.200.1
 
 # Cluster store URL
 # for etcd
-cluster_store: etcd://{{manager_ip}}:2379/swarm
+cluster_store: etcd://{{manager_ip}}:2379/docker
 
 # for consul
-# cluster_store: consul://localhost:8500/swarm
+# cluster_store: consul://localhost:8500/docker
 
 # set your proxy if you need
 http_proxy:
