@@ -14,7 +14,7 @@
   when: http_proxy is defined and  http_proxy != None
 
 - name: Create swarm join container
-  command: docker create {{swarm_env}} --name swarm_join swarm -debug join --advertise={{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:2375 {{cluster_store}}
+  command: docker create --name swarm_join swarm join --advertise={{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}:2375 {{cluster_store}}
   when: check_join.rc != 0
 
 - name: Copy systemd service
