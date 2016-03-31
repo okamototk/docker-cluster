@@ -1,22 +1,15 @@
-Docker Swarmインストーラ
+Docker Clusterインストーラ
 -----------------------
 
 # 概要
 
 ※ 本スクリプトは開発中のため不具合がある可能性があるのでご注意ください。
 
-Docker Swarmにより外部ツールを利用しなくともDockerだけでクラスタ
-や仮想ネットワークを構築できるようになりました。
-Docker Machineを利用すると簡単にSwarmを構築することができますが、
-Virtualboxが前提となっているようなので、プロダクション環境で
-利用できるものではありません(多分)。
+本スクリプトは、下記のDocker環境(のいずれか)を簡単にセットアップします。
 
-かと言って、自身で構築したOSにSwarmをインストールするとかなり面倒です。
-また、Webで調査すると古い設定方法が掲載されており、若干手間取る
-ことがあります(というか、私がはまりました)。
-
-Docker Swarmインストーラは、構成管理ツールのAnsibleを利用して
-簡単にDocker Swarmのクラスタを構築するツールです。
+* Dockerのoverlayネットワークのみを利用できるようにする(site_overlaynetwork.yml)
+* Docker Swarmクラスタを構築する(site_swarm.yml)
+* Kubernatesクラスタを構築する(site_k8s.yml)
 
 # 前提条件
 
@@ -45,10 +38,14 @@ KVは、etcdとconsulが選択できるようになっていますがデフォ�
 * Swarmコンテナがノードモード(join)で動作するため、ノードとしても利用できます。
 * etcd, consul(server mode)を起動します
 
+Kubernatesの場合は、hyperkubeコンテナを利用して、ノードのセットアップを行います。
+
 ## 通常ノード
 
 * Swarmコンテナがノードモード(join)で動作します。
 * consul(clint mode)を起動します。
+
+Kubernatesの場合は、hyperkubeコンテナを利用して、ノードのセットアップを行います。
 
 # 使い方
 
@@ -82,8 +79,8 @@ manage_ifはDocker内部で利用する通信のネットワークインタフ�
 
 ## 事前準備
 
-Docker SwarmインストーラはAnsibleを利用するため、Ansibleを事前にインストールし、
-ssh鍵を設定しておく必要があります。
+Docker ClusterインストーラはAnsibleを利用するため、Ansibleを事前にインストールし、
+sh鍵を設定しておく必要があります。
 
 ### Ubuntuの場合
 
