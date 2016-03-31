@@ -1,5 +1,5 @@
 {% if (native_cluster | default(False)) %}
-DOCKER_OPTS=-s {{docker_config.storage_driver}} -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock
+DOCKER_OPTS=-s {{docker_config.storage_driver}} --cluster-store={{cluster_store}} --cluster-advertise={{manage_if}}:2376 -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock
 {% else %}
 DOCKER_OPTS=-s {{docker_config.storage_driver}}
 {%- endif -%}
