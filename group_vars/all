@@ -10,7 +10,7 @@ cluster_store: etcd://{{manager_ip}}:2379/docker
 
 # set your proxy if you need
 http_proxy:
-no_proxy: 127.0.0.1,192.168.250.2,192.168.250.3,192.168.250.1
+no_proxy: 127.0.0.1,192.168.200.2,192.168.200.3,192.168.200.1
 
 docker_config:
   # Use overlayfs for Storage Drive.
