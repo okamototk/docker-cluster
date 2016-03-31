@@ -16,6 +16,12 @@
 - name: Start etcd container as systemd service
   service: name=etcd.service state=restarted enabled=yes
 
+- command: etcdctl ls /
+  register: res
+  until: res.rc == 0
+  retries: 6
+  delay: 10
+
 - include: firewalld.yml
   when: firewalld is defined
 

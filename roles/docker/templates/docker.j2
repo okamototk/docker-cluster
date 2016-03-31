@@ -1,14 +1,9 @@
 {% if (native_cluster | default(False)) %}
-DOCKER_OPTS=-s {{docker_config.storage_driver}} --cluster-store={{cluster_store}} --cluster-advertise=
-{%- if (swarm | default(False)) -%}
-{{manage_if}}
-{%- else -%}
-{{hostvars[inventory_hostname]["ansible_"+manage_if]["ipv4"]["address"]}}
-{%- endif -%}
-:2376 -H tcp://0.0.0.0:2375 -H fd://
+DOCKER_OPTS=-s {{docker_config.storage_driver}} -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock
 {% else %}
 DOCKER_OPTS=-s {{docker_config.storage_driver}}
-{% endif %}
+{%- endif -%}
+{%- if (docker_bip | default(False)) %} --bip={{docker_bip|default}} {% endif %}
 
 {% if (proxy_env.http_proxy | default(False)) %}
 HTTP_PROXY={{proxy_env.http_proxy}}
