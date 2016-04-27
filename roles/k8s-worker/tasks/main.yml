@@ -9,7 +9,7 @@
   ignore_errors: yes
 
 - name: Pull hyperkube image
-  command: docker pull gcr.io/google_containers/hyperkube:{{k8s_ver}}
+  command: docker pull gcr.io/google_containers/hyperkube-amd64:{{k8s_ver}}
   when: chk_kubelet.rc !=0
 
 - command: |
