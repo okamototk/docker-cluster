@@ -4,6 +4,7 @@ DOCKER_OPTS=-s {{docker_config.storage_driver}} --cluster-store={{cluster_store}
 DOCKER_OPTS=-s {{docker_config.storage_driver}}
 {%- endif -%}
 {%- if (docker_bip | default(False)) %} --bip={{docker_bip|default}} {% endif %}
+{%- if ((k8s_ver is defined) | default(False)) %} --iptables=false --ip-masq=false --bridge=none {% endif %}
 
 {% if (proxy_env.http_proxy | default(False)) %}
 HTTP_PROXY={{proxy_env.http_proxy}}

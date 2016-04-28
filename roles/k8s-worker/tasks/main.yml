@@ -12,6 +12,18 @@
   command: docker pull gcr.io/google_containers/hyperkube-amd64:{{k8s_ver}}
   when: chk_kubelet.rc !=0
 
+- name: Create directory to store easy-rsa
+  file: path=/root/kube state=directory
+
+- name: Check easy-rsa installed 
+  stat: path=/root/kube/easy-rsa.tar.gz
+  register: check_easy_rsa_install
+
+- name: Download easy-rsa
+  get_url: url=https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz dest=/root/kube
+  when: check_easy_rsa_install.stat.exists == False
+  environment: proxy_env
+
 - command: |
     docker create
       --name=k8s_kubelet
